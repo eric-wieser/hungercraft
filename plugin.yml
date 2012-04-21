@@ -1,0 +1,34 @@
+name: HungerCraftPlugin
+main: tk.ericwieser.hungercraft.HungerCraftPlugin
+version: 0.1.0
+
+commands:
+   ignite:
+      description: Light the fire ring
+      usage: /<command> [level = 2]
+      permission: hungercraft.operators.ignite
+      permission-message: Not allowed!
+      
+   set-center:
+      description: Set the center of the ring
+      usage: /<command> [level = 2]
+      permission: hungercraft.operators.setup
+      permission-message: Not allowed!
+      
+   spawns:
+      description: Do stuff with spawns
+      usage: /<command> (open|close|assign)
+      permission: hungercraft.operators.setup
+      permission-message: Not allowed!
+     
+   game:
+      description: Do stuff with the game
+      usage: /<command> setup
+      permission: hungercraft.operators.setup
+      permission-message: Not allowed!
+      
+   status:
+      description: List the remaining players
+      usage: /<command>
+
+      
