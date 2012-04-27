@@ -8,6 +8,12 @@ commands:
       usage: /<command> [level = 2]
       permission: hungercraft.operators.ignite
       permission-message: Not allowed!
+     
+   plant: 
+      description: Plant wheat
+      usage: /<command> [n = 7|remove|random]
+      permission: hungercraft.operators.plant
+      permission-message: Not allowed!
       
    set-center:
       description: Set the center of the ring
