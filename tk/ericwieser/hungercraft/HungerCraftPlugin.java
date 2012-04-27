@@ -73,17 +73,13 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 		Player p = event.getEntity();
 		if(!spectators.contains(p)) {
     		makeSpectator(p);
-    		getServer().broadcastMessage("*Cannon Fire*");
-    		
-    		if(tributes.size() == 1) {
-    			getServer().broadcastMessage(tributes.iterator().next().getDisplayName() + " is the victor!");
-    		}
 		}
 	}
 	
 	public void onEnable(){
 		getServer().getPluginManager().registerEvents(this, this);
 		getServer().getPluginManager().registerEvents(new SpectatorListener(spectators), this);
+		getServer().getPluginManager().registerEvents(new TributeListener(tributes), this);
 		
 		Object c = this.getConfig().get("cornucopia.center");
 		if (c != null && c instanceof Vector) {
