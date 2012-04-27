@@ -25,14 +25,12 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 	SpawnManager spawnManager;
 	Location center;
 	
-	Set<Player> spectators = new HashSet<>();
-	Set<Player> tributes = new HashSet<>();
+	Set<Player> spectators = new HashSet<Player>();
+	Set<Player> tributes = new HashSet<Player>();
 	
 	@EventHandler
     public void blockDamaged(BlockDamageEvent event) {
 		if(spectators.contains(event.getPlayer())) {
-			event.getPlayer().sendMessage(ChatColor.RED + "Only tributes may break blocks");
-    		event.setCancelled(true);
 		}
 		else {
             Material type = event.getBlock().getType();
@@ -71,12 +69,6 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
-	public void playerSpawned(PlayerRespawnEvent event) {
-		if(spectators.contains(event.getPlayer()))
-			event.getPlayer().setFlying(true);
-			
-	}
-	@EventHandler
 	public void playerDied(PlayerDeathEvent event) {
 		Player p = event.getEntity();
 		if(!spectators.contains(p)) {
@@ -89,25 +81,9 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 		}
 	}
 	
-	@EventHandler
-	public void itemPickedUp(PlayerPickupItemEvent event) {
-		if(spectators.contains(event.getPlayer()))
-			event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void itemMoved(InventoryClickEvent event) {
-		if(event.getInventory().getType() == InventoryType.PLAYER)
-			return;
-		Player p = (Player) event.getWhoClicked();
-		if(spectators.contains(p)) {
-			p.sendMessage(ChatColor.RED + "Spectators cannot steal from chests");
-			event.setCancelled(true);
-		}
-	}
-	
 	public void onEnable(){
 		getServer().getPluginManager().registerEvents(this, this);
+		getServer().getPluginManager().registerEvents(new SpectatorListener(spectators), this);
 		
 		Object c = this.getConfig().get("cornucopia.center");
 		if (c != null && c instanceof Vector) {
@@ -119,8 +95,9 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 			
 		log = this.getLogger();
 		log.info("Your plugin has been enabled!");
-		
+
 		getCommand("ignite").setExecutor(new IgniteCommandExecutor(this));
+		getCommand("plant").setExecutor(new PlantCommandExecutor(this));
 		getCommand("set-center").setExecutor(new SetCenterCommandExecutor(this));
 				
 		getCommand("spawns").setExecutor(new SpawnsCommandExecutor(this));
