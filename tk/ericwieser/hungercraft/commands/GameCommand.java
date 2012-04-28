@@ -125,13 +125,22 @@ public class GameCommand implements CommandExecutor {
 			
 			Countdown c = new Countdown(10) {
 		        public void counted(int x) {
-					_plugin.getServer().broadcastMessage("" + x);
+					//_plugin.getServer().broadcastMessage("" + x);
+					for(Player p : _plugin.tributes) {
+						p.setLevel(x);
+					}
+		        }
+		        public void countedTenths(float x) {
+		        	for(Player p : _plugin.tributes) {
+						p.setExp(x / from);
+					}
 		        }
 		        public void done() {
 					_plugin.getServer().broadcastMessage("Let the games begin!");
-					_plugin.spectators.clear();
-					_plugin.spawnManager.raiseBarriers();
-					_plugin.spawnManager.assignPlayers(_plugin.tributes);
+					_plugin.spawnManager.lowerBarriers();
+					for(Player p : _plugin.tributes) {
+						p.setLevel(0);
+					}
 		        }
 	        };
 	        

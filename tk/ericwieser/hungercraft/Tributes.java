@@ -61,7 +61,9 @@ public class Tributes extends HashSet<Player> implements Listener {
             		Material.LEAVES,
             		Material.RED_ROSE,
             		Material.YELLOW_FLOWER,
-            		Material.LONG_GRASS
+            		Material.LONG_GRASS,
+            		Material.VINE,
+            		Material.CROPS
             };
             for(Material m : allowed) {
             	if(type == m)

@@ -10,8 +10,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import tk.ericwieser.hungercraft.commands.GameCommand;
@@ -56,6 +58,14 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 		if(!tributes.contains(p)) {
 			spectators.add(p);
 		}
+	}
+	
+	/**prevent explosions near the center*/
+	@EventHandler
+	public void explosion(EntityExplodeEvent event) {
+		Location at = event.getLocation();
+		if(at.distance(center) < 30)
+			event.blockList().clear();
 	}
 	
 	public void onEnable(){

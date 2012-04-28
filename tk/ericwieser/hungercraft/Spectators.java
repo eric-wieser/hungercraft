@@ -6,7 +6,9 @@ import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +16,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
@@ -32,10 +36,21 @@ public class Spectators extends HashSet<Player> implements Listener {
 	/**Prevent fire being extinguished*/
 	@EventHandler
 	public void interacted(PlayerInteractEvent event) {
-		if (contains(event.getPlayer()))
-			if (event.getAction() == Action.LEFT_CLICK_AIR
-					&& event.getClickedBlock().getType() == Material.FIRE)
+		if (contains(event.getPlayer())) {
+			Block b = event.getClickedBlock();
+			if (b != null && event.getAction() == Action.LEFT_CLICK_AIR
+					&& b.getType() == Material.FIRE)
 				event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void targeted(EntityTargetLivingEntityEvent event) {
+		if(event.getTarget() instanceof Player) {
+			Player p = (Player) event.getTarget();
+			if(contains(p))
+				event.setCancelled(true);
+		}
 	}
 
 	@EventHandler
