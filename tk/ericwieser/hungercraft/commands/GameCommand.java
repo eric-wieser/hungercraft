@@ -1,11 +1,11 @@
 package tk.ericwieser.hungercraft.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import tk.ericwieser.hungercraft.Countdown;
 import tk.ericwieser.hungercraft.HungerCraftPlugin;
 
 public class GameCommand implements CommandExecutor {
@@ -14,6 +14,19 @@ public class GameCommand implements CommandExecutor {
 
 	public GameCommand(HungerCraftPlugin hungerCraftPlugin) {
 		_plugin = hungerCraftPlugin;
+	}
+
+	String join(String[] array, String separator) {
+		String s = "";
+		for (int i = 0; i < array.length; i++) {
+			if (i != 0) s += separator;
+			s += array[i];
+		}
+		return s;
+	}
+
+	String join(String[] array) {
+		return join(array, ", ");
 	}
 
 	String[] wrapList(String[] names, int maxWidth) {
@@ -27,7 +40,9 @@ public class GameCommand implements CommandExecutor {
 			int[] lengths = new int[columns];
 			for (int i = 0; i < names.length; i++) {
 				String name = names[i];
-				lengths[i % columns] = Math.max(lengths[i % columns], name.length());
+				lengths[i % columns] =
+				                       Math.max(lengths[i % columns],
+				                               name.length());
 				test[i / columns][i % columns] = name;
 			}
 
@@ -78,17 +93,17 @@ public class GameCommand implements CommandExecutor {
 			for (Player spectator : _plugin.spectators) {
 				dead[i++] = spectator.getDisplayName();
 			}
-			sender.sendMessage(wrapList(dead, 40));
+			sender.sendMessage(join(dead));
 
 			// Show living tributes
 			int numAlive = _plugin.tributes.size();
-			sender.sendMessage("Surviving tributes ("+numAlive+"):");
+			sender.sendMessage("Surviving tributes (" + numAlive + "):");
 			String[] alive = new String[numAlive];
 			int j = 0;
 			for (Player tribute : _plugin.tributes) {
 				alive[j++] = tribute.getDisplayName();
 			}
-			sender.sendMessage(wrapList(alive, 40));
+			sender.sendMessage(join(alive));
 			return true;
 		}
 
@@ -96,12 +111,31 @@ public class GameCommand implements CommandExecutor {
 
 		String action = args[0];
 		if (action.equals("setup")) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				_plugin.makeTribute(p);
+			for (Player p : _plugin.spectators) {
+				_plugin.spectators.remove(p);
+				_plugin.tributes.add(p);
 			}
 			_plugin.spectators.clear();
 			_plugin.spawnManager.raiseBarriers();
 			_plugin.spawnManager.assignPlayers(_plugin.tributes);
+
+			return true;
+		} else if (action.equals("start")) {
+			_plugin.getServer().broadcastMessage("Game starting in:");
+			
+			Countdown c = new Countdown(10) {
+		        public void counted(int x) {
+					_plugin.getServer().broadcastMessage("" + x);
+		        }
+		        public void done() {
+					_plugin.getServer().broadcastMessage("Let the games begin!");
+					_plugin.spectators.clear();
+					_plugin.spawnManager.raiseBarriers();
+					_plugin.spawnManager.assignPlayers(_plugin.tributes);
+		        }
+	        };
+	        
+	        c.start(_plugin);
 
 			return true;
 		}

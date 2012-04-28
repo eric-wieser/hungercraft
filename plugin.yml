@@ -1,35 +1,37 @@
 name: HungerCraftPlugin
+author: Eric Wieser
+
 main: tk.ericwieser.hungercraft.HungerCraftPlugin
-version: 0.1.0
+version: 0.2.0
 
 commands:
    ignite:
       description: Light the fire ring
-      usage: /<command> [level = 2]
+      usage: /<command>
       permission: hungercraft.operators.ignite
       permission-message: Not allowed!
      
    plant: 
       description: Plant wheat
-      usage: /<command> [n = 7|remove|random]
+      usage: /<command> [n = 7|clear|random]
       permission: hungercraft.operators.plant
       permission-message: Not allowed!
       
    set-center:
       description: Set the center of the ring
-      usage: /<command> [level = 2]
+      usage: /<command>
       permission: hungercraft.operators.setup
       permission-message: Not allowed!
       
    spawns:
-      description: Do stuff with spawns
+      description: Do stuff with spawns. Prefer /game over this command
       usage: /<command> (open|close|assign)
       permission: hungercraft.operators.setup
       permission-message: Not allowed!
      
    game:
       description: Do stuff with the game
-      usage: /<command> setup
+      usage: /<command> (setup|start)
       permission: hungercraft.operators.setup
       permission-message: Not allowed!
       
@@ -39,7 +41,7 @@ commands:
       
    move:
       description: Reassign groups
-      usage: /<command> [player = sender] (tribute|spectator|none)
+      usage: /<command> [player=you] (tribute|spectator|none)
       permission: hungercraft.operators.setup
       permission-message: Not allowed!
 

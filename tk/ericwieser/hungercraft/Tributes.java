@@ -6,13 +6,11 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -44,7 +42,7 @@ public class Tributes extends HashSet<Player> implements Listener {
 
 	/** Cancel timeouts */
 	@EventHandler
-	public void playerLeaves(PlayerLoginEvent event) {
+	public void playerEnters(PlayerLoginEvent event) {
 		final Player p = event.getPlayer();
 		if(_timeouts.containsKey(p)) {
 			int taskId = _timeouts.get(p);
