@@ -1,13 +1,15 @@
-package tk.ericwieser.hungercraft;
+package tk.ericwieser.hungercraft.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class SpawnsCommandExecutor implements CommandExecutor {
+import tk.ericwieser.hungercraft.HungerCraftPlugin;
+
+public class Spawns implements CommandExecutor {
 	private HungerCraftPlugin _plugin;
 
-	public SpawnsCommandExecutor(HungerCraftPlugin hungerCraftPlugin) {
+	public Spawns(HungerCraftPlugin hungerCraftPlugin) {
 		_plugin = hungerCraftPlugin;
 	}
 
@@ -33,9 +35,14 @@ public class SpawnsCommandExecutor implements CommandExecutor {
 			return true;
 			
 		}
+		else if(action.equalsIgnoreCase("debug")) {
+			sender.sendMessage("There are "+_plugin.spawnManager.count()+" spawns");
+			return true;
+			
+		}
 		else if(action.equalsIgnoreCase("assign")) {
 			_plugin.getLogger().info("Players assigned");
-			_plugin.spawnManager.assignPlayers();
+			_plugin.spawnManager.assignPlayers(_plugin.tributes);
 			return true;
 		}
 		return false;

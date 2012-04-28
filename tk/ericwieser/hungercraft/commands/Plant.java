@@ -1,4 +1,4 @@
-package tk.ericwieser.hungercraft;
+package tk.ericwieser.hungercraft.commands;
 
 import java.util.Random;
 
@@ -8,12 +8,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-public class PlantCommandExecutor implements CommandExecutor {
+import tk.ericwieser.hungercraft.HungerCraftPlugin;
+
+public class Plant implements CommandExecutor {
 
 	@SuppressWarnings("unused")
     private HungerCraftPlugin _plugin;
 
-	public PlantCommandExecutor(HungerCraftPlugin hungerCraftPlugin) {
+	public Plant(HungerCraftPlugin hungerCraftPlugin) {
 		_plugin = hungerCraftPlugin;
 	}
 	
@@ -54,13 +56,13 @@ public class PlantCommandExecutor implements CommandExecutor {
 		
 		Block[] neighbours = new Block[] {
 		        b.getRelative(BlockFace.NORTH),
-		        b.getRelative(BlockFace.NORTH_EAST),
+		        //b.getRelative(BlockFace.NORTH_EAST),
 		        b.getRelative(BlockFace.EAST),
-		        b.getRelative(BlockFace.SOUTH_EAST),
+		        //b.getRelative(BlockFace.SOUTH_EAST),
 		        b.getRelative(BlockFace.SOUTH),
-		        b.getRelative(BlockFace.SOUTH_WEST),
-		        b.getRelative(BlockFace.WEST),
-		        b.getRelative(BlockFace.NORTH_WEST),
+		        //b.getRelative(BlockFace.SOUTH_WEST),
+		        b.getRelative(BlockFace.WEST)//,
+		        //b.getRelative(BlockFace.NORTH_WEST),
 		};
 		for (Block neighbour : neighbours) {
 			plant(neighbour, growth);

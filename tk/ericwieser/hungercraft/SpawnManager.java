@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,33 +62,39 @@ public class SpawnManager {
 
 		raiseBarriers();
 	}
+	
+	public int count() {
+		return _spawns.size();
+	}
 
-	public void assignPlayers() {
+	public void assignPlayers(Set<Player> players) {
 		raiseBarriers();
 
-		Player[] players = Bukkit.getOnlinePlayers();
-		int numPlayers = Math.min(players.length, _spawns.size());
-		float spawnsPerPlayer = _spawns.size() / (float) players.length;
-		for (int i = 0; i < numPlayers; i++) {
-			Player p = players[i];
-			p.setVelocity(new Vector(0, 0, 0));
-
-			int spawnIndex = (int) (i * spawnsPerPlayer);
-			Location spawnLocation = _spawns.get(spawnIndex).clone()
-			        .add(0.5, 1, 0.5);
-
-			Vector pToC = _center.clone().add(0.5, 0, 0.5)
-			        .subtract(spawnLocation).toVector();
-
-			spawnLocation.setYaw((float) Math.toDegrees(-Math.atan2(
-			        pToC.getX(), pToC.getZ())));
-			p.teleport(spawnLocation, TeleportCause.PLUGIN);
+		float spawnsPerPlayer = _spawns.size() / (float) players.size();
+		int i = 0;
+		for(Player p : players) {
+			if(i < _spawns.size()) {
+    			p.setFoodLevel(20);
+    			p.setHealth(20);
+    			p.getInventory().clear();
+    			
+    			p.setVelocity(new Vector(0, 0, 0));
+    
+    			int spawnIndex = (int) (i * spawnsPerPlayer);
+    			Location spawnLocation = _spawns.get(spawnIndex).clone()
+    			        .add(0.5, 1, 0.5);
+    
+    			Vector pToC = _center.clone().add(0.5, 0, 0.5)
+    			        .subtract(spawnLocation).toVector();
+    
+    			spawnLocation.setYaw((float) Math.toDegrees(-Math.atan2(
+    			        pToC.getX(), pToC.getZ())));
+    			p.teleport(spawnLocation, TeleportCause.PLUGIN);
+    			i++;
+			} else {
+				p.sendMessage("Sorry, no room");
+			}
 		}
-	}
-	
-	private void setWithData(Block b, Material m, byte data) {
-		b.setType(m);
-		b.setData(data);
 	}
 
 	private void _setBarriers(Material m, byte data) {
@@ -97,16 +104,22 @@ public class SpawnManager {
 			base.setType(Material.IRON_BLOCK);
 
 			Block lower = base.getRelative(BlockFace.UP);
-			setWithData(lower.getRelative(BlockFace.NORTH), m, data);
-			setWithData(lower.getRelative(BlockFace.EAST), m, data);
-			setWithData(lower.getRelative(BlockFace.SOUTH), m, data);
-			setWithData(lower.getRelative(BlockFace.WEST), m, data);
+			lower.getRelative(BlockFace.NORTH).setType(m);
+			lower.getRelative(BlockFace.EAST).setType(m);
+			lower.getRelative(BlockFace.SOUTH).setType(m);
+			lower.getRelative(BlockFace.WEST).setType(m);
 
 			Block upper = lower.getRelative(BlockFace.UP);
-			setWithData(upper.getRelative(BlockFace.NORTH), m, data);
-			setWithData(upper.getRelative(BlockFace.EAST), m, data);
-			setWithData(upper.getRelative(BlockFace.SOUTH), m, data);
-			setWithData(upper.getRelative(BlockFace.WEST), m, data);
+			upper.getRelative(BlockFace.NORTH).setType(m);
+			upper.getRelative(BlockFace.EAST).setType(m);
+			upper.getRelative(BlockFace.SOUTH).setType(m);
+			upper.getRelative(BlockFace.WEST).setType(m);
+			
+			upper = lower.getRelative(BlockFace.UP);
+			upper.getRelative(BlockFace.NORTH).setType(m);
+			upper.getRelative(BlockFace.EAST).setType(m);
+			upper.getRelative(BlockFace.SOUTH).setType(m);
+			upper.getRelative(BlockFace.WEST).setType(m);
 		}
 	}
 

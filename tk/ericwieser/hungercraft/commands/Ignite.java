@@ -1,4 +1,4 @@
-package tk.ericwieser.hungercraft;
+package tk.ericwieser.hungercraft.commands;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -6,12 +6,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-public class IgniteCommandExecutor implements CommandExecutor {
+import tk.ericwieser.hungercraft.HungerCraftPlugin;
+
+public class Ignite implements CommandExecutor {
 
 	@SuppressWarnings("unused")
     private HungerCraftPlugin _plugin;
 
-	public IgniteCommandExecutor(HungerCraftPlugin hungerCraftPlugin) {
+	public Ignite(HungerCraftPlugin hungerCraftPlugin) {
 		_plugin = hungerCraftPlugin;
 	}
 

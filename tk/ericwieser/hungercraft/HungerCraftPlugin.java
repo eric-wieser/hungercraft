@@ -1,66 +1,62 @@
 package tk.ericwieser.hungercraft;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
+import tk.ericwieser.hungercraft.commands.GameCommand;
+import tk.ericwieser.hungercraft.commands.Ignite;
+import tk.ericwieser.hungercraft.commands.Plant;
+import tk.ericwieser.hungercraft.commands.SetCenter;
+import tk.ericwieser.hungercraft.commands.Spawns;
+import tk.ericwieser.hungercraft.tribute.TributeFallenEvent;
+
 public class HungerCraftPlugin extends JavaPlugin implements Listener {
 	Logger log;
-	SpawnManager spawnManager;
-	Location center;
+	public SpawnManager spawnManager;
+	public Location center;
 	
-	Set<Player> spectators = new HashSet<Player>();
-	Set<Player> tributes = new HashSet<Player>();
+	public Spectators spectators = new Spectators();
+	public Tributes tributes = new Tributes(this);
 	
 	@EventHandler
-    public void blockDamaged(BlockDamageEvent event) {
-		if(spectators.contains(event.getPlayer())) {
+	public void tributeFallen(TributeFallenEvent event) {
+		if(tributes == event.getTributes()) {
+			Player p = event.getTribute();
+			getLogger().info(p.getDisplayName() + " has fallen");
+			getServer().broadcastMessage("*Cannon Fire*");
+			
+			for(Player other : tributes) {
+				Location loc = other.getLocation();
+				loc.setY(loc.getY()+10);
+				loc.getWorld().createExplosion(loc, 0);
+			}
+    		
+    		if(tributes.size() == 1) {
+    			Bukkit.broadcastMessage(tributes.iterator().next().getDisplayName() + " is the victor!");
+    		}
 		}
-		else {
-            Material type = event.getBlock().getType();
-            Material[] allowed = new Material[] {
-            		Material.BROWN_MUSHROOM,
-            		Material.RED_MUSHROOM,
-            		Material.LEAVES,
-            		Material.RED_ROSE,
-            		Material.YELLOW_FLOWER,
-            		Material.LONG_GRASS
-            };
-            for(Material m : allowed) {
-            	if(type == m)
-            		return;
-            }
-            event.getPlayer().sendMessage(ChatColor.RED + "Only leaves and mushrooms may be broken");
-    		event.setCancelled(true);
-		}
-    }
-	
+	}
+
 	public void makeSpectator(Player p) {
 		spectators.add(p);
 		tributes.remove(p);
-		p.setAllowFlight(true);
 	}
 	
 	public void makeTribute(Player p) {
 		tributes.add(p);
 		spectators.remove(p);
-		p.setAllowFlight(false);
 	}
 	
 	@EventHandler
@@ -78,8 +74,12 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 	
 	public void onEnable(){
 		getServer().getPluginManager().registerEvents(this, this);
-		getServer().getPluginManager().registerEvents(new SpectatorListener(spectators), this);
-		getServer().getPluginManager().registerEvents(new TributeListener(tributes), this);
+		getServer().getPluginManager().registerEvents(spectators, this);
+		getServer().getPluginManager().registerEvents(tributes, this);
+		
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			spectators.add(p);
+		}
 		
 		Object c = this.getConfig().get("cornucopia.center");
 		if (c != null && c instanceof Vector) {
@@ -92,11 +92,46 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 		log = this.getLogger();
 		log.info("Your plugin has been enabled!");
 
-		getCommand("ignite").setExecutor(new IgniteCommandExecutor(this));
-		getCommand("plant").setExecutor(new PlantCommandExecutor(this));
-		getCommand("set-center").setExecutor(new SetCenterCommandExecutor(this));
+		getCommand("ignite").setExecutor(new Ignite(this));
+		getCommand("plant").setExecutor(new Plant(this));
+		getCommand("set-center").setExecutor(new SetCenter(this));
+		getCommand("move").setExecutor(new CommandExecutor() {
+			@Override
+			public boolean onCommand(CommandSender sender, Command cmd, String label,
+			        String[] args) {
+				Player p = null;
+				String group = null;
+				if(args.length == 1 && sender instanceof Player) {
+					p = (Player) sender;
+					group = args[0];
+				} else if (args.length == 2) {
+					p = Bukkit.getPlayer(args[0]);
+					group = args[1];
+				}
 				
-		getCommand("spawns").setExecutor(new SpawnsCommandExecutor(this));
+				if(p != null) {
+					if(group.equals("tribute")) {
+						spectators.remove(p);
+						tributes.add(p);
+						return true;
+					}
+					else if(group.equals("spectator")) {
+						tributes.remove(p);
+						spectators.add(p);
+						return true;
+					}
+					else if(group.equals("none")){
+						tributes.remove(p);
+						spectators.remove(p);
+						return true;
+					}
+					return false;
+				}
+				return false;
+			}
+		});
+				
+		getCommand("spawns").setExecutor(new Spawns(this));
 		GameCommand g = new GameCommand(this);
 		getCommand("game").setExecutor(g);
 		getCommand("status").setExecutor(g);

@@ -36,5 +36,11 @@ commands:
    status:
       description: List the remaining players
       usage: /<command>
+      
+   move:
+      description: Reassign groups
+      usage: /<command> [player = sender] (tribute|spectator|none)
+      permission: hungercraft.operators.setup
+      permission-message: Not allowed!
 
       

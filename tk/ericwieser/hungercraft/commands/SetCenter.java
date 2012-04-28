@@ -1,14 +1,17 @@
-package tk.ericwieser.hungercraft;
+package tk.ericwieser.hungercraft.commands;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
-public class SetCenterCommandExecutor implements CommandExecutor {
+import tk.ericwieser.hungercraft.HungerCraftPlugin;
+import tk.ericwieser.hungercraft.SpawnManager;
+
+public class SetCenter implements CommandExecutor {
 	private HungerCraftPlugin _plugin;
 
-	public SetCenterCommandExecutor(HungerCraftPlugin hungerCraftPlugin) {
+	public SetCenter(HungerCraftPlugin hungerCraftPlugin) {
 		_plugin = hungerCraftPlugin;
 	}
 

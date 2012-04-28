@@ -1,10 +1,12 @@
-package tk.ericwieser.hungercraft;
+package tk.ericwieser.hungercraft.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import tk.ericwieser.hungercraft.HungerCraftPlugin;
 
 public class GameCommand implements CommandExecutor {
 
@@ -97,8 +99,9 @@ public class GameCommand implements CommandExecutor {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				_plugin.makeTribute(p);
 			}
+			_plugin.spectators.clear();
 			_plugin.spawnManager.raiseBarriers();
-			_plugin.spawnManager.assignPlayers();
+			_plugin.spawnManager.assignPlayers(_plugin.tributes);
 
 			return true;
 		}

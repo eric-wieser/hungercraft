@@ -18,21 +18,22 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class SpectatorListener implements Listener {
-	private Set<Player> _spectators;
+@SuppressWarnings("serial")
+public class Spectators extends HashSet<Player> implements Listener{
 	private Set<Player> _justSpawned;
 
 	@EventHandler
 	public void itemPickedUp(PlayerPickupItemEvent event) {
-		if(_spectators.contains(event.getPlayer()))
+		if(contains(event.getPlayer()))
 			event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void itemMoved(InventoryClickEvent event) {
 		Player p = (Player) event.getWhoClicked();
-		if(_spectators.contains(p)) {
+		if(contains(p)) {
 			if(event.getInventory().getType() == InventoryType.PLAYER) return;
+			if(event.getInventory().getType() == InventoryType.CRAFTING) return;
 			p.sendMessage(ChatColor.RED + "Spectators cannot use chests, furnaces, or similar");
 			event.setCancelled(true);
 		}
@@ -41,7 +42,7 @@ public class SpectatorListener implements Listener {
 	@EventHandler
     public void blockDamaged(BlockDamageEvent event) {
 		Player p = event.getPlayer();
-		if(_spectators.contains(p)) {
+		if(contains(p)) {
 			p.sendMessage(ChatColor.RED + "Only tributes may break blocks");
     		event.setCancelled(true);
 		}
@@ -51,7 +52,7 @@ public class SpectatorListener implements Listener {
     public void playerDamaged(EntityDamageEvent event) {
 		//Handle spectators getting hurt
 		Entity p = event.getEntity();
-		if(p instanceof Player && _spectators.contains((Player) p)) {
+		if(p instanceof Player && contains((Player) p)) {
 			event.setCancelled(true);
 		}
 	}
@@ -59,7 +60,7 @@ public class SpectatorListener implements Listener {
 	@EventHandler
 	public void attackedSomeone(EntityDamageByEntityEvent event) {
 		Entity d = event.getDamager();
-		if(d instanceof Player && _spectators.contains((Player) d)) {
+		if(d instanceof Player && contains((Player) d)) {
 			((Player) d).sendMessage(ChatColor.RED + "Hey! Spectators can't attack.");
 			event.setCancelled(true);
 		}
@@ -67,9 +68,9 @@ public class SpectatorListener implements Listener {
 	
 	@EventHandler
 	public void playerSpawned(PlayerRespawnEvent event) {
-		if(_spectators.contains(event.getPlayer())) {
-			_justSpawned.add(event.getPlayer());
-			event.getPlayer().setFlying(true);
+		Player p = event.getPlayer();
+		if(contains(p)) {
+			_justSpawned.add(p);
 		}
 			
 	}
@@ -77,7 +78,7 @@ public class SpectatorListener implements Listener {
 	@EventHandler
 	public void playerMoved(PlayerMoveEvent event) {
 		Player p = event.getPlayer();
-		if(_spectators.contains(p)) {
+		if(contains(p)) {
 			if(_justSpawned.contains(p)) {
 				p.setAllowFlight(true);
 				p.setFlying(true);
@@ -87,9 +88,20 @@ public class SpectatorListener implements Listener {
 		}
 	}
 	
-	public SpectatorListener(Set<Player> spectators) {
+	@Override
+	public boolean add(Player p) {
+		_justSpawned.add(p);
+	    return super.add(p);
+	}
+	
+	@Override
+	public boolean remove(Object o) {
+		_justSpawned.remove(o);
+	    return super.remove(o);
+	}
+	
+	public Spectators() {
 		_justSpawned = new HashSet<Player>();
-		_spectators = spectators;
 	}
 
 }
