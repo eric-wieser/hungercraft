@@ -8,7 +8,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,13 +15,12 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+//import org.bukkit.potion.PotionEffect;
+//import org.bukkit.potion.PotionEffectType;
 
 @SuppressWarnings("serial")
 public class Spectators extends HashSet<Player> implements Listener {
@@ -109,7 +107,7 @@ public class Spectators extends HashSet<Player> implements Listener {
 			if (_justSpawned.remove(p)) {;
 				p.setAllowFlight(true);
 				p.setFlying(true);
-				p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+				//p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
 				p.sendMessage("Flying enabled!");
 			}
 		}
@@ -126,7 +124,7 @@ public class Spectators extends HashSet<Player> implements Listener {
 		_justSpawned.remove(o);
 		if(o instanceof Player) {
 			Player p = (Player) o;
-			p.removePotionEffect(PotionEffectType.SPEED);
+			//p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 0, 0), true);
 			p.setAllowFlight(false);
 			p.setFlying(false);
 			p.setGameMode(GameMode.SURVIVAL);

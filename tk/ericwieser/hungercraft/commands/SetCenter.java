@@ -26,6 +26,7 @@ public class SetCenter implements CommandExecutor {
 
 			_plugin.center = center;
 			_plugin.getConfig().set("cornucopia.center", center.toVector());
+			_plugin.getConfig().set("cornucopia.world", center.getWorld().getName());
 			_plugin.saveConfig();
 
 			_plugin.spawnManager = new SpawnManager(center);

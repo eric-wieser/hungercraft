@@ -9,12 +9,15 @@ import tk.ericwieser.hungercraft.Tributes;
 public class TributeFallenEvent extends Event {
 	Tributes others;
 	Player tribute;
+	TributeFallenReason reason;
 	
-	public TributeFallenEvent(Tributes o, Player p) {
+	public TributeFallenEvent(Tributes o, Player p, TributeFallenReason r) {
 		tribute = p;
 		others = o;
+		reason = r;
 	}
-	
+
+	public TributeFallenReason getReason() { return reason; }
 	public Player getTribute() { return tribute; }
 	public Tributes getTributes() { return others; }
 

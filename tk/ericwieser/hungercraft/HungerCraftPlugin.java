@@ -3,6 +3,7 @@ package tk.ericwieser.hungercraft;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import tk.ericwieser.hungercraft.commands.GameCommand;
@@ -22,6 +22,7 @@ import tk.ericwieser.hungercraft.commands.Plant;
 import tk.ericwieser.hungercraft.commands.SetCenter;
 import tk.ericwieser.hungercraft.commands.Spawns;
 import tk.ericwieser.hungercraft.tribute.TributeFallenEvent;
+import tk.ericwieser.hungercraft.tribute.TributeFallenReason;
 
 public class HungerCraftPlugin extends JavaPlugin implements Listener {
 	Logger log;
@@ -35,15 +36,18 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 	public void tributeFallen(TributeFallenEvent event) {
 		if(tributes == event.getTributes()) {
 			Player p = event.getTribute();
-			getLogger().info(p.getDisplayName() + " has fallen");
-			getServer().broadcastMessage("*Cannon Fire*");
+			getLogger().info(p.getDisplayName() + " has fallen ("+event.getReason()+")");
 			
-			for(Player other : tributes) {
-				Location loc = other.getLocation();
-				loc.setY(loc.getY()+10);
-				loc.getWorld().createExplosion(loc, 0);
+			//Explosion for non-administration movements
+			if(event.getReason() != TributeFallenReason.OTHER) {
+    			getServer().broadcastMessage(ChatColor.DARK_PURPLE+"*Cannon Fire*");
+    			
+    			for(Player other : tributes) {
+    				Location loc = other.getLocation();
+    				loc.setY(loc.getY()+10);
+    				loc.getWorld().createExplosion(loc, 0);
+    			}
 			}
-    		
     		if(tributes.size() == 1) {
     			Bukkit.broadcastMessage(tributes.iterator().next().getDisplayName() + " is the victor!");
     		}
@@ -78,8 +82,9 @@ public class HungerCraftPlugin extends JavaPlugin implements Listener {
 		}
 		
 		Object c = this.getConfig().get("cornucopia.center");
+		String world = this.getConfig().getString("cornucopia.world");
 		if (c != null && c instanceof Vector) {
-			center = ((Vector) c).toLocation(Bukkit.getWorld("world"));
+			center = ((Vector) c).toLocation(Bukkit.getWorld(world));
 		}
 		if(center != null) {
 			spawnManager = new SpawnManager(center);

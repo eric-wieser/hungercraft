@@ -25,8 +25,8 @@ public abstract class Countdown implements Runnable {
 		else {
 			if(at % 10 == 0) {
     			counted(at / 10);
-    			countedTenths((float) at / 10f);
     		}
+			countedTenths((float) at / 10f);
 			at--;
 		}
 	}

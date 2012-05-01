@@ -88,6 +88,7 @@ public class SpawnManager {
     			spawnLocation.setYaw((float) Math.toDegrees(-Math.atan2(
     			        pToC.getX(), pToC.getZ())));
     			p.teleport(spawnLocation, TeleportCause.PLUGIN);
+    			p.setFallDistance(0);
     			i++;
 			} else {
 				p.sendMessage("Sorry, no room");

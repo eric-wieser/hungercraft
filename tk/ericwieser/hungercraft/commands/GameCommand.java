@@ -1,5 +1,7 @@
 package tk.ericwieser.hungercraft.commands;
 
+import java.util.Iterator;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -111,17 +113,20 @@ public class GameCommand implements CommandExecutor {
 
 		String action = args[0];
 		if (action.equals("setup")) {
-			for (Player p : _plugin.spectators) {
-				_plugin.spectators.remove(p);
-				_plugin.tributes.add(p);
+			
+			_plugin.spawnManager.raiseBarriers();
+			_plugin.spawnManager.assignPlayers(_plugin.spectators);
+			
+			Iterator<Player> it = _plugin.spectators.iterator();
+			while (it.hasNext()) {
+				_plugin.tributes.add(it.next());
+				it.remove();
 			}
 			_plugin.spectators.clear();
-			_plugin.spawnManager.raiseBarriers();
-			_plugin.spawnManager.assignPlayers(_plugin.tributes);
 
 			return true;
 		} else if (action.equals("start")) {
-			_plugin.getServer().broadcastMessage("Game starting in:");
+			_plugin.getServer().broadcastMessage("Countdown in XP bar");
 			
 			Countdown c = new Countdown(10) {
 		        public void counted(int x) {

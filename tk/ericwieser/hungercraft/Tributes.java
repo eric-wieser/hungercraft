@@ -11,10 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import tk.ericwieser.hungercraft.tribute.TributeFallenEvent;
+import tk.ericwieser.hungercraft.tribute.TributeFallenReason;
 
 @SuppressWarnings("serial")
 public class Tributes extends HashSet<Player> implements Listener {
@@ -26,6 +28,11 @@ public class Tributes extends HashSet<Player> implements Listener {
 	    _timeouts = new HashMap<>();
     }
 	
+	@EventHandler
+	public void playerDeath(PlayerDeathEvent event) {
+		Player p = event.getEntity();
+		remove(p, TributeFallenReason.DEATH);
+	}
 	
 	@EventHandler
 	public void playerLeaves(PlayerQuitEvent event) {
@@ -33,7 +40,7 @@ public class Tributes extends HashSet<Player> implements Listener {
 		if(contains(p)) {
     		int taskId = Bukkit.getScheduler().scheduleSyncDelayedTask(_plugin, new Runnable() {
     			@Override public void run() {
-    				remove(p);
+    				remove(p, TributeFallenReason.TIMEOUT);
     			}
     		}, TIMEOUT);
     		_timeouts.put(p, taskId);
@@ -75,17 +82,20 @@ public class Tributes extends HashSet<Player> implements Listener {
     }
 	
 	/**Remove a player from the list of tributes. Fires a TributeFallenEvent */
-	public boolean remove(Object p) {
+	public boolean remove(Object p, TributeFallenReason r) {
 		boolean contained = super.remove(p);
 		if(contained) {
 			_timeouts.remove(p);
 			if(p instanceof Player) {
-    			TributeFallenEvent e = new TributeFallenEvent(this, (Player) p);
-    			Bukkit.getServer().broadcastMessage("DEAD");
+    			TributeFallenEvent e = new TributeFallenEvent(this, (Player) p, r);
     			Bukkit.getServer().getPluginManager().callEvent(e);
 			}
 		}
 		return contained;
+	}
+	
+	public boolean remove(Object p) {
+		return remove(p, TributeFallenReason.OTHER);
 	}
 
 	public boolean add(Player p) {
